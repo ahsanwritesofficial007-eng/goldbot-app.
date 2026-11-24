@@ -100,4 +100,46 @@ class _GateState extends State<Gate> {
   }
 }
 
-// ------------------------------------
+// -------------------------------------------------------------- Connect
+class ConnectScreen extends StatefulWidget {
+  final VoidCallback onSaved;
+  const ConnectScreen({super.key, required this.onSaved});
+  @override
+  State<ConnectScreen> createState() => _ConnectScreenState();
+}
+
+class _ConnectScreenState extends State<ConnectScreen> {
+  final url = TextEditingController();
+  final key = TextEditingController();
+
+  Future<void> _save() async {
+    final p = await SharedPreferences.getInstance();
+    await p.setString('url', url.text.trim());
+    await p.setString('key', key.text.trim());
+    widget.onSaved();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Connect to your bot')),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(children: [
+            TextField(
+              controller: url,
+              keyboardType: TextInputType.url,
+              decoration: const InputDecoration(
+                  labelText: 'Server URL (https://...)'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: key,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'API key'),
+            ),
+            const SizedBox(height: 20),
+            FilledButton(onPressed: _save, child: const Text('Save')),
+          ]),
+        ),
+      );
+}
